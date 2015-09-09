@@ -56,11 +56,12 @@ class UserController extends \BaseController {
         } else {
             // store
             $user = new User;
-            $user->nicname   = Input::get('name');
-            $user->acc_name   = Input::get('acc_name');
-            $user->email      = Input::get('email');
+            $user->nicname         = Input::get('name');
+            $user->acc_name        = Input::get('acc_name');
+            $user->email           = Input::get('email');
             $user->password_digest = Hash::make(Input::get('password'));
-            
+            $user->sign_in_count   = '0';
+            $user->activated       = '0';
             $user->save();
 
             // redirect
