@@ -21,3 +21,5 @@ Route::get('/nainglinhtut', function()
 {
 	echo "nainglinhtut";
 });
+
+Route::resource('user', 'UserController');

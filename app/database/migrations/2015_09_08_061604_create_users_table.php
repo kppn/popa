@@ -28,8 +28,7 @@ class CreateUsersTable extends Migration {
 			$table->string('remember_token', 255);
 			$table->integer('activated');
 			$table->timestamps();
-			$table->integer('disuse');
-			$table->datetime('disuse_at');
+			$table->softDeletes();
 		});
 	}
 
