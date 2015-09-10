@@ -17,17 +17,16 @@ Route::get('/', function()
 });
 
 
-Route::get('/nainglinhtut', function()
-{
-	echo "nainglinhtut";
-});
-
+// User REST Default
 Route::resource('user', 'UserController');
 
-//Route::get('/oauthfacebook', 'App\Controllers\BaseController\UserController\@oauthFacebook');
-Route::get('/oauthfacebook', 'UserController@oauthFacebook');
-/*Route::get('/oauthfacebook',function() {
+// POPA Account user registration / login / logout
+Route::get( 'user/logout', array('uses' => 'UserController@doLogout'));
+Route::get( 'user/login',  array('uses' => 'UserController@index'));
+Route::get( 'user/home',   array('uses' => 'UserController@home'));
+Route::post('user/login',  array('uses' => 'UserController@doLogin'));
 
-echo "ttttt";
-});*/
+// SNS Account user registration / login / logout
+Route::get('/oauthfacebook', 'UserController@oauthFacebook');
+
 

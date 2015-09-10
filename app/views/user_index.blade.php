@@ -11,10 +11,10 @@
 
 <nav class="navbar navbar-inverse">
     <div class="navbar-header">
-        <a class="navbar-brand" href="{{ URL::to('user') }}">User Alert</a>
+        <a class="navbar-brand" href="{{ URL::to('user') }}">Nerd Alert</a>
     </div>
     <ul class="nav navbar-nav">
-        <!--<li><a href="{{ URL::to('nerds') }}">View All Nerds</a></li>-->
+        <li><a href="{{ URL::to('user') }}">View All Nerds</a></li>
         <li><a href="{{ URL::to('user/create') }}">User Register</a>
     </ul>
 </nav>
@@ -26,6 +26,25 @@
     <div class="alert alert-info">{{ Session::get('message') }}</div>
 @endif
 
+{{ HTML::ul($errors->all()) }}
+
+{{ Form::open(array('url'=>'user/login', 'class'=>'form-vertical')) }}
+
+
+<div class="form-group has-feedback animated fadeInLeft delayp1">
+        <label>{{ Lang::get('core.email'); }}   </label>
+        {{ Form::text('email', null, array('class'=>'form-control', 'placeholder'=>'Email Address')) }}
+        <i class="icon-users form-control-feedback"></i>
+    </div>
+    
+    <div class="form-group has-feedback  animated fadeInRight delayp1">
+        <label>{{ Lang::get('core.password'); }}    </label>
+        {{ Form::password('password', array('class'=>'form-control', 'placeholder'=>'Password')) }}
+        <i class="icon-lock form-control-feedback"></i>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm btn-block" >Log In</button>
+ {{ Form::close() }}
 
 </div>
 </body>

@@ -71,6 +71,56 @@ class UserController extends \BaseController {
 		}
 	}
 
+	public function doLogin() {
+		$userdata = array(
+	        	'email'     => Input::get('email'),
+			'password'  => Input::get('password')
+		);
+
+		if (Auth::attempt($userdata)) {
+	    		if(Auth::check()) {
+				$id = Auth::user()->id;
+				$ip = getClientIp();
+				updateLoginInfo($id, $ip);
+			}
+			return Redirect::to('user/home');
+		}
+		else {
+			Log::debug('Auth::attempt fail');
+			return Redirect::to('user');
+		}
+	}
+	
+	private function getClientIp() {
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+	    		$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+    			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		
+		return $ip;
+	}
+	
+	private function updateLoginInfo ($id, $ip) {
+		$user = User::find($id);
+		
+		$sign_in_count = $user->sign_in_count + 1;
+		DB::table('users')
+		        ->where('id', '=', $user->id)
+		        ->update(array('sign_in_count' => $sign_in_count,
+		                       'sign_in_at'    => date("Y-m-d H:i:s"), 
+		                       'sign_in_ip'    => $ip)
+	 	                      );
+		
+		$sessionUser = Session::put('user', $user->email);
+	}
+	
+	public function doLogout(){
+		Auth::logout(); // log the user out of our application
+		return Redirect::to('user'); // redirect the user to the login screen
+	}
 
 	/**
 	 * Display the specified resource.
