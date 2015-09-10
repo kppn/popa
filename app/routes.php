@@ -23,3 +23,11 @@ Route::get('/nainglinhtut', function()
 });
 
 Route::resource('user', 'UserController');
+
+//Route::get('/oauthfacebook', 'App\Controllers\BaseController\UserController\@oauthFacebook');
+Route::get('/oauthfacebook', 'UserController@oauthFacebook');
+/*Route::get('/oauthfacebook',function() {
+
+echo "ttttt";
+});*/
+

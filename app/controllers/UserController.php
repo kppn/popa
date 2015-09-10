@@ -1,5 +1,6 @@
 <?php
 
+
 class UserController extends \BaseController {
 
 	/**
@@ -118,5 +119,90 @@ class UserController extends \BaseController {
 		//
 	}
 
+	/**
+	 * Login user with facebook
+	 *
+	 * @return void
+	 */
+	public function oauthFacebook()
+	{
+		Log::debug("Input::all() : ", Input::all());
 
+		$code = Input::get( 'code' );
+	
+		$fb = OAuth::consumer( 'Facebook' );
+		
+		// if code is provided get user data and sign in
+		if ( !empty( $code ) ) 
+		{
+			Log::debug("oauthFacebook: callback from Facebook");
+			
+			$token = $fb->requestAccessToken( $code );
+			$result = json_decode( $fb->request( '/me' ), true );
+
+			Log::debug('$fb->request() : ', $result);
+			
+			$uid = array('uid' => $result['id']);
+			
+			// バリデーションのルール指定, メッセージの指定
+			// usersテーブルのproviderがfacebookの行でuidが一意かをチェック
+			$rules = array(
+				'uid' => 'unique:users,uid,NULL,id,provider,facebook',
+			);
+			$messages = array(
+				'unique' => 'このユーザーは既に登録されています。', 
+			);
+			
+			// バリデーションチェック
+			$validator = Validator::make($uid, $rules, $messages);
+			
+			if($validator->fails())
+			{
+				Log::debug('validator fails');
+				return Redirect::to('register')->withInput()->withErrors($validator);
+			}
+			
+			// Eloquent ORMで$userインスタンスを作成してデータベースへ書き込む
+			$user = new User;
+			$user->provider = "facebook";
+			$user->uid = $result['id'];
+			$user->nicname = $result['name'];
+
+			// TODO: Nameが一意かどうか調べる
+			$user->acc_name = $user->nicname;
+
+			// SNSアカウントではpasswordはダミー
+			$user->password_digest = Hash::make('dummy');
+			$user->sign_in_count   = '0';
+			$user->activated       = '0';
+
+			// TODO: emailが無い場合は取得ページへ遷移
+			if (isset($result['email'])) {
+				$user->email = $result['email'];
+			}
+			else {
+				Log::debug('Email can't retrieved');
+				$user->email = 'dummy@dummy.com';
+			}
+			$user->save();
+			
+			// TODO: セッション作成・ログイン情報の更新処理
+			
+			$id = Auth::user()->id;
+			return Redirect::to('user/'.$id);
+		}
+		
+		// 一番最初にアクセスした時
+		else {
+			Log::debug("oauthFacebook: first access");
+			
+			$url = $fb->getAuthorizationUri();
+			// $url = '[object] (OAuth\\Common\\Http\\Uri\\Uri: ' . str_replace('oauthfacebook', 'oauthfacebook/', $url);
+
+			Log::debug('$fb->getAuthorizationUri() : ', array(0 => $url));
+			
+			return Redirect::to( (string)$url );
+		}
+	}
 }
+
