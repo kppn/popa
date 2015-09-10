@@ -41,7 +41,7 @@ class UserController extends \BaseController {
             'name'       => 'required',
             'acc_name'	=> 'required|unique:users',
             'email'      => 'required|email|unique:users',
-            'password' => 'required|numeric'
+            'password' => Config::get('constants.VALIDATION_POPA_ACCOUNT_PASSWORD')
         );
 
         $validator = Validator::make(Input::all(), $rules);
