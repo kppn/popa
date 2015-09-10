@@ -10,10 +10,10 @@ class UserController extends \BaseController {
 	public function index()
 	{
 		// get all the users
-        $users = User::all();
-        // load the view and pass the users
-        return View::make('user_index')
-            ->with('users', $users);
+		$users = User::all();
+		// load the view and pass the users
+		return View::make('user_index')
+			->with('users', $users);
 	}
 
 
@@ -36,38 +36,38 @@ class UserController extends \BaseController {
 	public function store()
 	{
 		// validate
-        // read more on validation at http://laravel.com/docs/validation
-        $rules = array(
-            'name'       => 'required',
-            'acc_name'	=> 'required|unique:users',
-            'email'      => 'required|email|unique:users',
-            'password' => 'required|numeric'
-        );
+		// read more on validation at http://laravel.com/docs/validation
+		$rules = array(
+			'name'       => 'required',
+			'acc_name'   => 'required|unique:users',
+			'email'      => 'required|email|unique:users',
+			'password'   => 'required|numeric'
+		);
 
-        $validator = Validator::make(Input::all(), $rules);
+		$validator = Validator::make(Input::all(), $rules);
 
-        $input = Input::all();
+		$input = Input::all();
 
-        // process the register
-        if ($validator->fails()) {
-            return Redirect::to('user/create')
-                ->withErrors($validator)
-                ->withInput(Input::except('password'));
-        } else {
-            // store
-            $user = new User;
-            $user->nicname         = Input::get('name');
-            $user->acc_name        = Input::get('acc_name');
-            $user->email           = Input::get('email');
-            $user->password_digest = Hash::make(Input::get('password'));
-            $user->sign_in_count   = '0';
-            $user->activated       = '0';
-            $user->save();
+		// process the register
+		if ($validator->fails()) {
+			return Redirect::to('user/create')
+				->withErrors($validator)
+				->withInput(Input::except('password'));
+		} else {
+			// store
+			$user = new User;
+			$user->nicname         = Input::get('name');
+			$user->acc_name        = Input::get('acc_name');
+			$user->email           = Input::get('email');
+			$user->password_digest = Hash::make(Input::get('password'));
+			$user->sign_in_count   = '0';
+			$user->activated       = '0';
+			$user->save();
 
-            // redirect
-            Session::flash('message', 'Successfully created nerd!');
-            return Redirect::to('user');
-        }
+			// redirect
+			Session::flash('message', 'Successfully created nerd!');
+			return Redirect::to('user');
+		}
 	}
 
 

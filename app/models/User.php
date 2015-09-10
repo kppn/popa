@@ -24,13 +24,13 @@ class User extends Eloquent{
 
 	protected $primaryKey = 'id';
 
-    public function __construct() {
-        parent::__construct();
-    }
+	public function __construct() {
+		parent::__construct();
+	}
 
-	 public static $rules = array(
-    	'acc_name' => 'required|min:5',
-    	'email' => 'required|email'
-  	);
+	public static $rules = array(
+		'acc_name' => 'required|min:5',
+		'email'    => 'required|email'
+	);
 
 }
