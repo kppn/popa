@@ -231,7 +231,7 @@ class UserController extends \BaseController {
 				$user->email = $result['email'];
 			}
 			else {
-				Log::debug('Email can't retrieved');
+				Log::debug('Email cant retrieved');
 				$user->email = 'dummy@dummy.com';
 			}
 			$user->save();
