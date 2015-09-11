@@ -27,11 +27,6 @@
 {{ Form::open(array('url' => 'user')) }}
 
     <div class="form-group">
-        {{ Form::label('name', 'Nick Name') }}
-        {{ Form::text('name', Input::old('name'), array('class' => 'form-control')) }}
-    </div>
-
-    <div class="form-group">
         {{ Form::label('acc_name', 'Account Name') }}
         {{ Form::text('acc_name', Input::old('acc_name'), array('class' => 'form-control')) }}
     </div>
@@ -44,6 +39,11 @@
     <div class="form-group">
         {{ Form::label('password', 'Password') }}
         {{ Form::password('password', array('class' => 'form-control')) }}
+    </div>
+
+    <div class="form-group">
+        {{ Form::label('confirm_password', 'Confirm Password') }}
+        {{ Form::password('confirm_password', array('class' => 'form-control')) }}
     </div>
 
     {{ Form::submit('User Register!', array('class' => 'btn btn-primary')) }}
