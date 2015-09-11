@@ -13,8 +13,10 @@ class UserController extends \BaseController {
 		// get all the users
 		$users = User::all();
 		// load the view and pass the users
-		return View::make('user_index')
+		$view = View::make('user_index')
 			->with('users', $users);
+		Log::debug($view);
+		return $view;
 	}
 
 
@@ -25,7 +27,9 @@ class UserController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('user_create');
+		$view = View::make('user_create');
+		Log::debug($view);
+		return $view; 
 	}
 
 
@@ -73,15 +77,27 @@ class UserController extends \BaseController {
 
 	public function doLogin() {
 		$userdata = array(
-	        	'email'     => Input::get('email'),
+			'email'     => Input::get('email'),
 			'password'  => Input::get('password')
 		);
+		$this->execLogin($userdata);
+	}
 
-		if (Auth::attempt($userdata)) {
-	    		if(Auth::check()) {
+	private function execLogin($userdata){
+
+		Log::debug("execLogin start", $userdata);
+
+		if (Auth::attempt($userdata, true)) {
+
+			Log::debug("Auth::attempt OK");
+
+			if(Auth::check()) {
+
+				Log::debug("Auth::check() ok");
+
 				$id = Auth::user()->id;
-				$ip = getClientIp();
-				updateLoginInfo($id, $ip);
+				$ip = $this->getClientIp();
+				$this->updateLoginInfo($id, $ip);
 			}
 			return Redirect::to('user/home');
 		}
@@ -92,18 +108,24 @@ class UserController extends \BaseController {
 	}
 	
 	private function getClientIp() {
+
+		Log::debug("getClientIp start");
+
 		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-	    		$ip = $_SERVER['HTTP_CLIENT_IP'];
+				$ip = $_SERVER['HTTP_CLIENT_IP'];
 		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 		} else {
-    			$ip = $_SERVER['REMOTE_ADDR'];
+				$ip = $_SERVER['REMOTE_ADDR'];
 		}
 		
 		return $ip;
 	}
 	
 	private function updateLoginInfo ($id, $ip) {
+
+		Log::debug("updateLoginInfo start");
+
 		$user = User::find($id);
 		
 		$sign_in_count = $user->sign_in_count + 1;
@@ -112,7 +134,7 @@ class UserController extends \BaseController {
 		        ->update(array('sign_in_count' => $sign_in_count,
 		                       'sign_in_at'    => date("Y-m-d H:i:s"), 
 		                       'sign_in_ip'    => $ip)
-	 	                      );
+		                      );
 		
 		$sessionUser = Session::put('user', $user->email);
 	}
@@ -199,47 +221,71 @@ class UserController extends \BaseController {
 			$rules = array(
 				'uid' => 'unique:users,uid,NULL,id,provider,facebook',
 			);
-			$messages = array(
-				'unique' => 'このユーザーは既に登録されています。', 
-			);
 			
 			// バリデーションチェック
-			$validator = Validator::make($uid, $rules, $messages);
+			$validator = Validator::make($uid, $rules);
 			
 			if($validator->fails())
 			{
+				// ユーザーは登録済み
 				Log::debug('validator fails');
-				return Redirect::to('register')->withInput()->withErrors($validator);
-			}
-			
-			// Eloquent ORMで$userインスタンスを作成してデータベースへ書き込む
-			$user = new User;
-			$user->provider = "facebook";
-			$user->uid = $result['id'];
-			$user->nicname = $result['name'];
+				/*
+				$user = DB::table('users')
+				        ->where('uid', '=', $uid)
+				        ->where('provider', '=', 'facebook')
+				        ->first();
+				*/
+				$user = User::where('uid', '=', $uid)->where('provider', '=', 'facebook')->first();
+				
+				$userdata = array(
+					'email'     => $user->email,
+					'password'  => 'dummy'
+				);
 
-			// TODO: Nameが一意かどうか調べる
-			$user->acc_name = $user->nicname;
+				// TODO:　ログイン処理を呼ぶ
+				$this->execLogin($userdata);
 
-			// SNSアカウントではpasswordはダミー
-			$user->password_digest = Hash::make('dummy');
-			$user->sign_in_count   = '0';
-			$user->activated       = '0';
-
-			// TODO: emailが無い場合は取得ページへ遷移
-			if (isset($result['email'])) {
-				$user->email = $result['email'];
+				return Redirect::to('user');
 			}
 			else {
-				Log::debug('Email cant retrieved');
-				$user->email = 'dummy@dummy.com';
+				// ユーザーは未登録
+
+				$data['provider'] = "facebook";
+				$data['uid']      = $result['id'];
+				$data['nicname']  = $result['name'];
+				$data['acc_name'] = $data['nicname'];
+
+				// 数値かどうかをチェック
+				$rules = array(
+					'acc_name' => 'numeric',
+				);
+
+				
+				$validator = Validator::make(['acc_name'], $rules);
+
+				if($validator->fails())
+				{
+					$data['acc_name'] = null;
+					Log::debug('$validator->fails() : ', $data['acc_name']);
+				}
+				
+
+				// TODO: emailが無い場合は取得ページへ遷移
+				if (isset($result['email'])) {
+					$data['email'] = $result['email'];
+				}
+				else {
+					Log::debug('Email cant retrieved');
+					$data['email'] = null;
+				}
+
+				Log::debug('$data : ', $data);
+				// 確認ページに遷移
+
+				$view = View::make('user_page', $data);
+				Log::debug($view);
+				return $view;
 			}
-			$user->save();
-			
-			// TODO: セッション作成・ログイン情報の更新処理
-			
-			$id = Auth::user()->id;
-			return Redirect::to('user/'.$id);
 		}
 		
 		// 一番最初にアクセスした時
@@ -247,12 +293,66 @@ class UserController extends \BaseController {
 			Log::debug("oauthFacebook: first access");
 			
 			$url = $fb->getAuthorizationUri();
-			// $url = '[object] (OAuth\\Common\\Http\\Uri\\Uri: ' . str_replace('oauthfacebook', 'oauthfacebook/', $url);
 
 			Log::debug('$fb->getAuthorizationUri() : ', array(0 => $url));
 			
 			return Redirect::to( (string)$url );
 		}
 	}
-}
 
+	private function execLoginDummy($userdata) {
+		Log::debug('execLoginDummy');
+		Log::debug($userdata['email']);
+		Log::debug($userdata['password']);
+	}
+
+	public function registerSNS(){
+
+		Log::debug('debug ');
+
+		$rules = array(
+			'acc_name'   => 'required|unique:users',
+			'email'      => 'required|email|unique:users',
+		);
+
+		$data['provider'] = Input::get('provider');
+		$data['uid']      = Input::get('uid');
+		$data['nicname']  = Input::get('nicname');
+		$data['acc_name'] = Input::get('acc_name');
+		$data['email']    = Input::get('email');
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		if ($validator->fails()) {
+			$view = View::make('user_page', $data);
+			Log::debug($view);
+			return $view;
+				//->withErrors($validator)
+				//->withInput(Input::except('password'));
+		} else {
+			// 
+			$user = new User;
+			$user->nicname         = Input::get('nicname');
+			$user->acc_name        = Input::get('acc_name');
+			$user->email           = Input::get('email');
+			$user->provider        = Input::get('provider');
+			$user->uid             = Input::get('uid');
+			$user->password_digest = Hash::make('dummy');
+			$user->sign_in_count   = 0;
+			$user->activated       = 1;
+			$user->save();
+
+			$userdata = array(
+				'email'     => $user->email,
+				'password'  => 'dummy'
+			);
+
+			$this->execLoginDummy($userdata);
+			$this->execLogin($userdata);
+
+			// redirect
+			Session::flash('message', 'Successfully created nerd!');
+			return Redirect::to('user');
+		}
+	}
+}

@@ -1,7 +1,8 @@
 <?php
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Auth\UserInterface;
 
-class User extends Eloquent{
+class User extends Eloquent implements UserInterface{
 	use SoftDeletingTrait;
 
 	//use UserTrait, RemindableTrait;
@@ -33,4 +34,19 @@ class User extends Eloquent{
 		'email'    => 'required|email'
 	);
 
+	public function getAuthIdentifier() {
+		return $this->uid;
+	}
+	public function getAuthPassword() {
+		return $this->password_digest;
+	}
+	public function setRememberToken($r) {
+		$this->remember_token = $r;
+	}
+	public function getRememberToken() {
+		return $this->remember_token;
+	}
+	public function getRememberTokenName() {
+		return 'remember_token';
+	}
 }
