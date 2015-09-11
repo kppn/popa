@@ -43,10 +43,10 @@ class UserController extends \BaseController {
 		// validate
 		// read more on validation at http://laravel.com/docs/validation
 		$rules = array(
-			'name'       => 'required',
 			'acc_name'   => 'required|unique:users',
 			'email'      => 'required|email|unique:users',
-			'password'   => Config::get('constants.VALIDATION_POPA_ACCOUNT_PASSWORD')
+			'password'   => Config::get('constants.VALIDATION_POPA_ACCOUNT_PASSWORD'),
+			'confirm_password'	=> 'required|same:password'
 		);
 
 		$validator = Validator::make(Input::all(), $rules);
@@ -61,7 +61,7 @@ class UserController extends \BaseController {
 		} else {
 			// store
 			$user = new User;
-			$user->nicname         = Input::get('name');
+			$user->nicname         = Input::get('acc_name');
 			$user->acc_name        = Input::get('acc_name');
 			$user->email           = Input::get('email');
 			$user->password_digest = Hash::make(Input::get('password'));
