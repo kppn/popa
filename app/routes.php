@@ -27,6 +27,7 @@ Route::get( 'user/home',   array('uses' => 'UserController@home'));
 Route::post('user/login',  array('uses' => 'UserController@doLogin'));
 
 // SNS Account user registration / login / logout
-Route::get('/oauthfacebook', 'UserController@oauthFacebook');
+Route::get( '/oauthfacebook', 'UserController@oauthFacebook');
+Route::get( '/oauthtwitter',  'UserController@oauthTwitter');
 Route::post('user/page',      'UserController@registerSNS');
 

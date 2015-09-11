@@ -300,10 +300,104 @@ class UserController extends \BaseController {
 		}
 	}
 
-	private function execLoginDummy($userdata) {
-		Log::debug('execLoginDummy');
-		Log::debug($userdata['email']);
-		Log::debug($userdata['password']);
+	/**
+	 * Login user with twitter
+	 *
+	 * @return void
+	 */
+	public function oauthTwitter()
+	{
+		Log::debug("Input::all() : ", Input::all());
+		
+		$token = Input::get( 'oauth_token' );
+		$verify = Input::get( 'oauth_verifier' );
+		
+		$tw = OAuth::consumer( 'Twitter' );
+		
+		// if $token & $verify is provided get user data and sign in
+		if ( !empty( $token ) && !empty( $verify )) 
+		{
+			Log::debug("oauthTwitter: callback from Twitter");
+			
+			$token = $tw->requestAccessToken( $token, $verify );
+			$result = json_decode( $tw->request( 'account/verify_credentials.json' ), true );
+			
+			Log::debug('$tw->request() : ', $result);
+			
+			$message = 'Your unique Twitter user id is: ' . $result['id'] . ' and your name is ' . $result['name'];
+			
+			$uid = array('uid' => $result['id']);
+			
+			// バリデーションのルール指定, メッセージの指定
+			// usersテーブルのproviderがtwitterの行でidが一意かをチェック
+			$rules = array(
+				'uid' => 'unique:users,uid,NULL,id,provider,twitter',
+			);
+			
+			// バリデーションチェック
+			$validator = Validator::make($uid, $rules);
+			
+			if($validator->fails())
+			{
+				// ユーザーは登録済み
+				Log::debug('validator fails');
+				$user = User::where('uid', '=', $uid)->where('provider', '=', 'facebook')->first();
+				
+				$userdata = array(
+					'email'     => $user->email,
+					'password'  => 'dummy'
+				);
+				
+				// TODO:　ログイン処理を呼ぶ
+				$this->execLogin($userdata);
+				
+				return Redirect::to('user');
+			}
+			else {
+				// ユーザーは未登録
+				$data['provider'] = "twitter";
+				$data['uid']      = $result['id'];
+				$data['nicname']  = $result['screen_name'];
+				$data['acc_name'] = $data['nicname'];
+				
+				// 数値かどうかをチェック
+				$rules = array(
+					'acc_name' => 'numeric',
+				);
+				$validator = Validator::make(['acc_name'], $rules);
+				
+				if($validator->fails())
+				{
+					$data['acc_name'] = null;
+					Log::debug('$validator->fails() : ', $data['acc_name']);
+				}
+				if (isset($result['email'])) {
+					$data['email'] = $result['email'];
+				}
+				else {
+					Log::debug('Email cant retrieved');
+					$data['email'] = null;
+				}
+				Log::debug('$data : ', $data);
+				// 確認ページに遷移
+				
+				$view = View::make('user_page', $data);
+				Log::debug($view);
+				return $view;
+			}
+		}
+		else {
+			Log::debug("oauthTwitter: first access");
+			
+			$reqToken = $tw->requestRequestToken();
+			$url = $tw->getAuthorizationUri(
+				array('oauth_token' => $reqToken->getRequestToken())
+			);
+			
+			Log::debug('$tw->getAuthorizationUri() : ', array($url));
+			
+			return Redirect::to( (string)$url );
+		}
 	}
 
 	public function registerSNS(){
@@ -327,10 +421,7 @@ class UserController extends \BaseController {
 			$view = View::make('user_page', $data);
 			Log::debug($view);
 			return $view;
-				//->withErrors($validator)
-				//->withInput(Input::except('password'));
 		} else {
-			// 
 			$user = new User;
 			$user->nicname         = Input::get('nicname');
 			$user->acc_name        = Input::get('acc_name');
@@ -347,12 +438,7 @@ class UserController extends \BaseController {
 				'password'  => 'dummy'
 			);
 
-			$this->execLoginDummy($userdata);
 			$this->execLogin($userdata);
-
-			// redirect
-			Session::flash('message', 'Successfully created nerd!');
-			return Redirect::to('user');
 		}
 	}
 }
