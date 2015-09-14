@@ -65,8 +65,8 @@ class UserController extends \BaseController {
 			$user->acc_name        = Input::get('acc_name');
 			$user->email           = Input::get('email');
 			$user->password_digest = Hash::make(Input::get('password'));
-			$user->sign_in_count   = '0';
-			$user->activated       = '0';
+			$user->sign_in_count   = 0;
+			$user->activated       = 0;
 			$user->save();
 
 			// redirect
@@ -229,12 +229,7 @@ class UserController extends \BaseController {
 			{
 				// ユーザーは登録済み
 				Log::debug('validator fails');
-				/*
-				$user = DB::table('users')
-				        ->where('uid', '=', $uid)
-				        ->where('provider', '=', 'facebook')
-				        ->first();
-				*/
+				
 				$user = User::where('uid', '=', $uid)->where('provider', '=', 'facebook')->first();
 				
 				$userdata = array(
@@ -242,7 +237,6 @@ class UserController extends \BaseController {
 					'password'  => 'dummy'
 				);
 
-				// TODO:　ログイン処理を呼ぶ
 				$this->execLogin($userdata);
 
 				return Redirect::to('user');
@@ -269,8 +263,6 @@ class UserController extends \BaseController {
 					Log::debug('$validator->fails() : ', $data['acc_name']);
 				}
 				
-
-				// TODO: emailが無い場合は取得ページへ遷移
 				if (isset($result['email'])) {
 					$data['email'] = $result['email'];
 				}
@@ -280,8 +272,8 @@ class UserController extends \BaseController {
 				}
 
 				Log::debug('$data : ', $data);
-				// 確認ページに遷移
 
+				// 確認ページへ遷移
 				$view = View::make('user_page', $data);
 				Log::debug($view);
 				return $view;
@@ -348,7 +340,6 @@ class UserController extends \BaseController {
 					'password'  => 'dummy'
 				);
 				
-				// TODO:　ログイン処理を呼ぶ
 				$this->execLogin($userdata);
 				
 				return Redirect::to('user');
