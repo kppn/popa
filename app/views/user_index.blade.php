@@ -5,6 +5,13 @@
 <head>
     <title>Welcome</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <style>
+      .auth-sns-logos {
+        height: 50px;
+        width: 50px;
+        padding: 0px;
+      }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -44,8 +51,19 @@
     </div>
 
     <button type="submit" class="btn btn-primary btn-sm btn-block" >Log In</button>
- {{ Form::close() }}
+{{ Form::close() }}
+
+
+<div class="row">
+    <div class="col-md-1">
+        <a href="{{URL::to('/oauthfacebook')}}"><img src={{asset('system/images/system_logo_facebook.png')}} alt="Facebook" class="auth-sns-logos"></a>
+    </div>
+    <div class="col-md-1">
+        <a href="{{URL::to('/oauthfacebook')}}"><img src={{asset('system/images/system_logo_twitter.png')}}  alt="Twitter"  class="auth-sns-logos"></a>
+    </div>
+</div>
 
 </div>
+
 </body>
 </html>
