@@ -31,3 +31,7 @@ Route::get( '/oauthfacebook', 'UserController@oauthFacebook');
 Route::get( '/oauthtwitter',  'UserController@oauthTwitter');
 Route::post('user/page',      'UserController@registerSNS');
 
+Route::get('user/order', array('uses' => 'OrderController@index'));
+Route::post('user/order', array('uses' => 'OrderController@createOrder'));
+Route::post('user/orderPayment', array('uses' => 'OrderController@createOrderPayment'));
+Route::post('user/orderConfirm', array('uses' => 'OrderController@createOrderConfirm'));
