@@ -21,9 +21,12 @@ Route::get('home', function()
 	return View::make('home');
 });
 
-
 // User REST Default
-Route::resource('user', 'UserController');
+//Route::resource('user', 'UserController');
+Route::get( 'user',        'UserController@index');
+Route::get( 'user/create', 'UserController@create');
+Route::post('user',        'UserController@store');
+
 
 // POPA Account user registration / login / logout
 Route::get( 'user/logout', array('uses' => 'UserController@doLogout'));

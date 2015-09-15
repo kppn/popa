@@ -60,15 +60,16 @@ body {
     <ul class="nav navbar-nav">
       <li><a href="#">依頼</a></li>
     </ul>
-    @if(is_logined())
-      <p class="navbar-text navbar-right"><a href="{{ URL::to('user') }}" class="navbar-link">ログイン</a></p>
-    @else
+    @if(UserController::is_logined())
       <div class="navbar-text navbar-right">
         <div class="navbar-user-info">
-          <div class="navbar-points">{{$user.points}}</div>
-          <div class="navbar-user-name">{{$user.acc_name}}</div>
+          <div class="navbar-points">ポイント</div>
+          {{-- {{$user->points}} --}}
+          <div class="navbar-user-name">{{Auth::user()->acc_name}}</div>
         </div>
       </div>
+    @else
+      <p class="navbar-text navbar-right"><a href="{{ URL::to('user') }}" class="navbar-link">ログイン</a></p>
     @endif
   </div>
 </div>

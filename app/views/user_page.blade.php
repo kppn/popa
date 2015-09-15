@@ -17,7 +17,6 @@
 </div>
 </div>
 
-
 <div class="form-group">
 <div class="col-lg-1">
 {{ Form::label('email', 'メールアドレス:') }}

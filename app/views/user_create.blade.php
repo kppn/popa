@@ -1,5 +1,5 @@
 <!-- app/views/user/create.blade.php -->
-<!--
+{{-- <!--
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,12 +18,13 @@
         <li><a href="{{ URL::to('user/create') }}">User Register</a>
     </ul>
 </nav>
--->
+--> --}}
 
 @extends('layouts.default')
 
 @section('content')
 
+<div class="container">
 
 <h1>Create a Nerd</h1>
 
@@ -60,8 +61,8 @@
 
 @stop
 
-<!--
+{{-- <!--
 </body>
 </html>
--->
+--> --}}
 

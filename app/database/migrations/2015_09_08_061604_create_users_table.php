@@ -21,11 +21,12 @@ class CreateUsersTable extends Migration {
 			$table->string('acc_name', 255);
 			$table->string('real_name', 255)->nullable();
 			$table->string('email', 255);
-			$table->string('password_digest', 255);
+			$table->string('password', 255);
 			$table->integer('sign_in_count');
 			$table->datetime('sign_in_at')->nullable();
 			$table->string('sign_in_ip', 255)->nullable();
-			$table->string('remember_token', 255)->nullable();
+			//$table->string('remember_token', 255)->nullable();
+			$table->rememberToken();
 			$table->integer('activated');
 			$table->timestamps();
 			$table->softDeletes();

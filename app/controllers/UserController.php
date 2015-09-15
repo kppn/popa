@@ -19,6 +19,33 @@ class UserController extends \BaseController {
 		return $view;
 	}
 
+	public function home()
+	{
+		Log::debug('User::home()');
+		if ( Auth::viaRemember()) {
+			Log::debug('Auth::viaRemember() OK');
+		}
+		else {
+			Log::debug('Auth::viaRemember() NG');
+		}
+
+		if(Auth::check()){
+			Log::debug('Auth::check() OK');
+			return View::make('user');
+		}
+		else{
+			Log::debug('Auth::check() NG');
+			if (Auth::check()) {
+				Log::debug('Auth::check() twice OK');
+			}
+			else {
+				Log::debug('Auth::check() twice NG');
+			}
+			Session::flash('message', 'you must be login or register');
+			return Redirect::to('user/login');
+		}
+	}
+
 
 	/**
 	 * Show the form for creating a new resource.
@@ -64,7 +91,7 @@ class UserController extends \BaseController {
 			$user->nicname         = Input::get('acc_name');
 			$user->acc_name        = Input::get('acc_name');
 			$user->email           = Input::get('email');
-			$user->password_digest = Hash::make(Input::get('password'));
+			$user->password        = Hash::make(Input::get('password'));
 			$user->sign_in_count   = 0;
 			$user->activated       = 0;
 			$user->save();
@@ -80,7 +107,13 @@ class UserController extends \BaseController {
 			'email'     => Input::get('email'),
 			'password'  => Input::get('password')
 		);
-		$this->execLogin($userdata);
+		//$this->execLogin($userdata);
+		if($this->execLogin($userdata)){
+			return Redirect::to('user/home');
+		}
+		else{
+			return Redirect::to('user');
+		}
 	}
 
 	private function execLogin($userdata){
@@ -99,11 +132,13 @@ class UserController extends \BaseController {
 				$ip = $this->getClientIp();
 				$this->updateLoginInfo($id, $ip);
 			}
-			return Redirect::to('user/home');
+			//return Redirect::to('user');
+			return true;
 		}
 		else {
 			Log::debug('Auth::attempt fail');
-			return Redirect::to('user');
+			//return Redirect::to('user');
+			return false;
 		}
 	}
 	
@@ -275,7 +310,7 @@ class UserController extends \BaseController {
 
 				// 確認ページへ遷移
 				$view = View::make('user_page', $data);
-				Log::debug($view);
+				Log::debug($view->render());
 				return $view;
 			}
 		}
@@ -373,7 +408,7 @@ class UserController extends \BaseController {
 				// 確認ページに遷移
 				
 				$view = View::make('user_page', $data);
-				Log::debug($view);
+				Log::debug($view->render());
 				return $view;
 			}
 		}
@@ -412,24 +447,40 @@ class UserController extends \BaseController {
 			$view = View::make('user_page', $data);
 			Log::debug($view);
 			return $view;
-		} else {
-			$user = new User;
-			$user->nicname         = Input::get('nicname');
-			$user->acc_name        = Input::get('acc_name');
-			$user->email           = Input::get('email');
-			$user->provider        = Input::get('provider');
-			$user->uid             = Input::get('uid');
-			$user->password_digest = Hash::make('dummy');
-			$user->sign_in_count   = 0;
-			$user->activated       = 1;
-			$user->save();
-
-			$userdata = array(
-				'email'     => $user->email,
-				'password'  => 'dummy'
-			);
-
-			$this->execLogin($userdata);
 		}
+		
+		$user = new User;
+		$user->nicname         = Input::get('nicname');
+		$user->acc_name        = Input::get('acc_name');
+		$user->email           = Input::get('email');
+		$user->provider        = Input::get('provider');
+		$user->uid             = Input::get('uid');
+		$user->password        = Hash::make('dummy');
+		$user->sign_in_count   = 0;
+		$user->activated       = 1;
+		$user->save();
+
+		$userdata = array(
+			'email'     => $user->email,
+			'password'  => 'dummy'
+		);
+
+		if (! $this->execLogin($userdata)) {
+			Log::debug('registerSNS() execLogin NG');
+			return Redirect::to('user/login');
+		}
+
+		# Success
+		return Redirect::to('user/home');
+	}
+
+	public static function is_logined (){
+		if (Auth::user()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+		//return Auth::check();
 	}
 }

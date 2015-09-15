@@ -35,10 +35,11 @@ class User extends Eloquent implements UserInterface{
 	);
 
 	public function getAuthIdentifier() {
-		return $this->uid;
+		//return $this->uid;
+		return $this->getKey();
 	}
 	public function getAuthPassword() {
-		return $this->password_digest;
+		return $this->password;
 	}
 	public function setRememberToken($r) {
 		$this->remember_token = $r;

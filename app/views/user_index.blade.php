@@ -1,7 +1,7 @@
 <!-- app/views/nerds/index.blade.php -->
-
+{{-- <!--
 <!DOCTYPE html>
-<!--
+
 <html>
 <head>
     <title>Welcome</title>
@@ -26,10 +26,13 @@
         <li><a href="{{ URL::to('user/create') }}">User Register</a>
     </ul>
 </nav>
--->
+--> --}}
+
 @extends('layouts.default')
 
 @section('content')
+
+<div class="container">
 
 <h1>Welcome </h1>
 
@@ -73,6 +76,8 @@
 
 @stop
 
+{{-- <!--
 </body>
 </html>
+--> --}}
 
