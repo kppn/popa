@@ -17,8 +17,6 @@ Route::get('/', function()
 });
 
 
-// User REST Default
-Route::resource('user', 'UserController');
 
 // POPA Account user registration / login / logout
 Route::get( 'user/logout', array('uses' => 'UserController@doLogout'));
@@ -30,6 +28,10 @@ Route::post('user/login',  array('uses' => 'UserController@doLogin'));
 Route::get( '/oauthfacebook', 'UserController@oauthFacebook');
 Route::get( '/oauthtwitter',  'UserController@oauthTwitter');
 Route::post('user/page',      'UserController@registerSNS');
+
+// User REST Default
+Route::resource('user', 'UserController');
+
 
 Route::get('user/order', array('uses' => 'OrderController@index'));
 Route::post('user/order', array('uses' => 'OrderController@createOrder'));

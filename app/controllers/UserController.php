@@ -19,6 +19,19 @@ class UserController extends \BaseController {
 		return $view;
 	}
 
+	public function home()
+	{
+		if(Auth::check())
+		{
+			return View::make('user');
+		}
+		else{
+			Session::flash('message', 'you must be login or register');
+			return Redirect::to('user/login');
+			
+		}
+	}
+
 
 	/**
 	 * Show the form for creating a new resource.
@@ -31,6 +44,8 @@ class UserController extends \BaseController {
 		Log::debug($view);
 		return $view; 
 	}
+
+
 
 
 	/**
