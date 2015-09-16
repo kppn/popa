@@ -59,7 +59,7 @@ class CreateOrdersTable extends Migration {
 			$table->integer('money');
 			$table->integer('point');
 
-			$table->datetime('closed_at');
+			$table->datetime('closed_at')->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 		});

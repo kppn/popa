@@ -83,9 +83,9 @@
     <div class="form-group">
         <label for="category_id">Category</label>
         <select name="category_id">
-        	<option value="category one">category one</option>
-        	<option value="category two">category two</option>
-        	<option value="category three">category three</option>
+        	<option value="1">category one</option>
+        	<option value="2">category two</option>
+        	<option value="3">category three</option>
         </select>
     </div>
 

@@ -166,10 +166,10 @@ class OrderController extends \BaseController {
         	date_default_timezone_set('Asia/Tokyo');//日時ゾーン
 	        $num = date("YmdHis", time())."_".Input::get('acc_name');//エクセルファイルフォーマット
 
-			//echo $num;
-			//exit();
+		//echo $num;
+		//exit();
 
-			$input = Input::all();
+		$input = Input::all();
 
 			// store
 	        $order = new Order;
@@ -193,33 +193,51 @@ class OrderController extends \BaseController {
         	$list_image_filename3 = Input::get('list_image_filename3');
         	$list_image_filename4 = Input::get('list_image_filename4');
         	$list_image_filename5 = Input::get('list_image_filename5');
+		
+		// TODO: 有料時は期間を選択させる
+		$order->term = 7;
+
+		$order->num_comment = 0;
+		$order->num_view = 0;
+		$order->num_pop = 0;
+
+		//$order->payment_order = 0;
 
 	        if ($list_image_filename2!="null") {
-	        	$order->list_image_filename2 = $list_image_filename2;
-			}
+				$order->list_image_filename2 = $list_image_filename2;
+		}
 
-			if ($list_image_filename3!="null") {
+		if ($list_image_filename3!="null") {
         		$order->list_image_filename3 = $list_image_filename3;
-			}
+		}
 
-			if ($list_image_filename4!="null") {
+		if ($list_image_filename4!="null") {
         		$order->list_image_filename4 = $list_image_filename4;
-			}
+		}
 
-			if ($list_image_filename5!="null") {
-        		$order->list_image_filename5 = $list_image_filename5;
-			}
+		if ($list_image_filename5!="null") {
+			$order->list_image_filename5 = $list_image_filename5;
+		}
 
-			$money = Input::get('money');
-        	$point = Input::get('point');
+		$money = Input::get('money');
+		$point = Input::get('point');
 
-			if ($money!="null") {
-        		$order->money = $money;
-			}
+		if ($money!="null") {
+       			$order->money = $money;
+			$order->payment_order = 1;
+		}
+		else{
+			$order->money = 0;
+			$order->payment_order = 0;
+		}
+			
 
-			if ($point!="null") {
+		if($point!="null") {
         		$order->point = $point;
-			}
+		}
+		else {
+			$order->point = 0;
+		}
 
 	        $order->save();
 
