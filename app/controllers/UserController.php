@@ -60,6 +60,8 @@ class UserController extends \BaseController {
 	}
 
 
+
+
 	/**
 	 * Store a newly created resource in storage.
 	 *

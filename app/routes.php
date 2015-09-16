@@ -27,7 +27,6 @@ Route::get( 'user',        'UserController@index');
 Route::get( 'user/create', 'UserController@create');
 Route::post('user',        'UserController@store');
 
-
 // POPA Account user registration / login / logout
 Route::get( 'user/logout', array('uses' => 'UserController@doLogout'));
 Route::get( 'user/login',  array('uses' => 'UserController@index'));
@@ -38,4 +37,10 @@ Route::post('user/login',  array('uses' => 'UserController@doLogin'));
 Route::get( '/oauthfacebook', 'UserController@oauthFacebook');
 Route::get( '/oauthtwitter',  'UserController@oauthTwitter');
 Route::post('user/page',      'UserController@registerSNS');
+
+// Order
+Route::get( 'user/order',        array('uses' => 'OrderController@index'));
+Route::post('user/order',        array('uses' => 'OrderController@createOrder'));
+Route::post('user/orderPayment', array('uses' => 'OrderController@createOrderPayment'));
+Route::post('user/orderConfirm', array('uses' => 'OrderController@createOrderConfirm'));
 
