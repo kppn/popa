@@ -43,6 +43,7 @@
 
     <input type="hidden" name="money" value="{{$orders['money']}}"/>
     <input type="hidden" name="point" value="{{$orders['point']}}"/>
+    <input type="hidden" name="term" value="{{$orders['term']}}"/>
 
     <table class="table">
         <tr><td>Store Name</td><td>{{$orders['store_name']}}</td></tr>

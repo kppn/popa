@@ -20,12 +20,31 @@
 
     <h2>Order Payment</h2>
 
-    <div class="form-group">
-        <label for="money">Money</label>
-        <input class="" name="money" type="radio" id="" value="300" checked="">300 yen
-        <input class="" name="money" type="radio" id="" value="500">500 yen
-        <input class="" name="money" type="radio" id="" value="800">800 yen
+        <div class="form-group">
+        <label for="service stage">Service Stage</label>
+
+        @foreach($service_stages as $ss)
+        <input class="" id="money" name="money" type="radio" id="" value="{{$ss->money}}" onclick="generateDate()">{{$ss->money}}
+        @endforeach
+
     </div>
+
+
+<input type="hidden" id="order_low_term" name="order_low_term" value="0">
+                                    <input type="hidden" id="order_high_term" name="order_high_term" value="0">
+
+        <input type="hidden" name="acc_name" value="{{ Auth::user()->acc_name }}">
+    <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+
+
+
+
+
+                                    <div>
+                                        <label>Test Date</label>
+                                        <select name="sdate" id="sdate">
+                                        </select>
+                                    </div>
     
     <input type="hidden" name="store_name" value="{{$orders['store_name']}}" />
     <input type="hidden" name="store_name_publication" value="{{$orders['store_name_publication']}}" />
@@ -50,5 +69,73 @@
 {{ Form::close() }}
 
 </div>
+
+
+<script src="{{ asset('js')}}/jquery.js"></script>
+<script src="{{ asset('js')}}/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+</script>
+
+<script>
+    
+    function generateDate()
+    {
+            $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: 'orderDate',
+            data:'money='+$('#money:checked').val(),
+
+            beforeSend: function(){
+
+            },
+            success: function (data) 
+            {      
+
+                    //console.log(data[0].order_low_term+"-"+data[0].order_high_term);
+                    //alert('oooooooooo');
+
+                    //var order_low_term = data[0].order_low_term;
+                    //var order_high_term = data[0].order_high_term;
+
+                    //$('#select_date').val('0000-00-00');
+                    //$('#datetimepicker1').empty();
+
+
+
+
+                    //console.log(data);
+
+                    //$('#item').html('');
+                    $('#sdate').empty();
+
+                    $.each(data, function(index, item_data){
+
+                        $('#sdate').append('<option value='+item_data.select_date+'>'+item_data.select_date+'</option>')
+
+                        
+                    });
+
+
+
+
+
+
+                   
+                    
+               },
+               complete: function(){
+                    // do the following after success is done.
+                },
+                error: function(){
+                    // do the following if there is error. 
+                }
+            });
+    }
+</script>
+
+
 </body>
 </html>

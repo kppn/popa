@@ -109,7 +109,9 @@ class OrderController extends \BaseController {
 			'list_image_filename5' => $list_image_filename5,
 
 			'money' => 'null',
-			'point' => 'null'
+			'point' => 'null',
+
+			'term' => 0
 		);
 
 		//var_dump($orders);
@@ -121,8 +123,12 @@ class OrderController extends \BaseController {
 			return View::make('order_confirm')
 				->with('orders',$orders);
 		}elseif (Input::get('pay')) {
+			
+			$service_stages = DB::table('service_stage')->where('money', '>', 0)->get();
+
 			return View::make('order_payment')
-				->with('orders',$orders);
+				->with('orders',$orders)
+				->with('service_stages',$service_stages);
 		}
         }
 	}
@@ -239,6 +245,7 @@ class OrderController extends \BaseController {
 			$order->point = 0;
 		}
 
+			$order->term = Input::get('term');
 	        $order->save();
 
 	    	// redirect
@@ -282,6 +289,56 @@ class OrderController extends \BaseController {
         }
         else if (Input::has('confirm'))
         {
+
+        	$money = Input::get('money');
+
+        	$service_stages = DB::table('service_stage')->where('money', '=', $money)->first();
+
+
+        	if ($service_stages == NULL) {
+        		
+
+
+        		//Log::alert("ttttttttttttttttttttttttttttttttttttttttttt");
+        		$acc_name = Input::get('acc_name');
+        		$error = "cracking ".$acc_name;
+
+        		Log::emergency($error);
+
+        		/*Log::emergency($error);
+				Log::alert($error);
+				Log::critical($error);
+				Log::error($error);
+				Log::warning($error);
+				Log::notice($error);
+				Log::info($error);
+				Log::debug($error);*/
+				Auth::logout(); // log the user out of our application
+				return Redirect::to('user'); // redirect the user to the login screen
+
+        	}
+
+        	else{
+
+
+        	
+
+
+        	date_default_timezone_set('Asia/Tokyo');//日時ゾーン
+	        	$td = date("Y-m-d");
+
+        		$sd = Input::get('sdate');
+        		//echo $sd."</br>";
+
+        		$term = (strtotime($sd) - strtotime($td)) / (60 * 60 * 24);
+				//print $term;
+
+        		$money = Input::get('money');
+
+				$service_stages = DB::table('service_stage')->where('money', '=', $money)->get();
+
+				$point = $service_stages[0]->point;
+
         	$orders= array
 			(
 				'store_name' =>Input::get('store_name'),
@@ -300,19 +357,47 @@ class OrderController extends \BaseController {
 				'list_image_filename4' => Input::get('list_image_filename4'),
 				'list_image_filename5' => Input::get('list_image_filename5'),
 
-				'money' => Input::get('money'),
-				'point' => Input::get('money')
+				'money' => $money,
+				'point' => $point,
+
+				'term' => $term
 			);
 
 			return View::make('order_confirm')
 				->with('orders',$orders);
-
+			}
         }	
 	}
 
 
-		private function testMethod() {
+		public function getOrderDate() {
 
+			date_default_timezone_set('Asia/Tokyo');//日時ゾーン
+	        $td = date("Y-m-d");
+
+			$money = Input::get('money');
+			//$service_stages = DB::table('service_stage')->where('money', '=', $money)->first();
+			$service_stages = DB::table('service_stage')->where('money', '=', $money)->get();
+
+			$olt = $service_stages[0]->order_low_term;
+			$oht = $service_stages[0]->order_high_term;
+
+			//$sd = date('Y-m-d', strtotime($td. ' + '.$olt.' days'));
+			//$ed = date('Y-m-d', strtotime($td. ' + '.$oht.' days'));
+
+			$dateLists = array();
+			for ($x = $olt; $x <= $oht; $x++)
+			{
+    			$dateLists[] = array('select_date' =>date('Y-m-d', strtotime($td. ' + '.$x.' days')));
+			}
+
+			//$dateLists[] = array('point' => $service_stages[0]->point );
+
+			//var_dump($sd."---".$ed."---".$td);
+			//var_dump($dateLists);
+			//exit();
+
+			return $dateLists;
 		}
 
 

@@ -39,6 +39,7 @@ Route::get( '/oauthtwitter',  'UserController@oauthTwitter');
 Route::post('user/page',      'UserController@registerSNS');
 
 // Order
+Route::get('user/orderDate', array('uses' => 'OrderController@getOrderDate'));
 Route::get( 'user/order',        array('uses' => 'OrderController@index'));
 Route::post('user/order',        array('uses' => 'OrderController@createOrder'));
 Route::post('user/orderPayment', array('uses' => 'OrderController@createOrderPayment'));
