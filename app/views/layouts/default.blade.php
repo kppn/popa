@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Laravel Auth Tutorial</title>
+<title>POPA</title>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
  
@@ -40,13 +40,13 @@ body {
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed"data-toggle="collapse"data-target="#navbarEexample8">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarEexample8">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{{ URL::to('home') }}">
+      <a class="navbar-brand" href="{{ URL::to('/') }}">
         POPA
       </a>
     </div>
@@ -56,9 +56,9 @@ body {
     </div>
     <button type="submit" class="btn btn-default">検索</button>
   </form>
-  <div class="collapse navbar-collapse" id="navbarEexample8">
+  <div class="navbar-collapse collapse" id="navbarEexample8">
     <ul class="nav navbar-nav">
-      <li><a href="#">依頼</a></li>
+      <li><a href="{{ URL::to('user/order') }}">依頼</a></li>
     </ul>
     @if(UserController::is_logined())
       <div class="navbar-text navbar-right">
@@ -80,6 +80,34 @@ body {
 @yield('content')
  
 </div>
+
+
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="question">
+          問い合わせ<br>
+          <ul class="footer-ul">
+            <li> <a href="#">利用規約</a> </li>
+            <li> <a href="#">個人情報の取り扱いについて</a> </li>
+            <li> <a href="#">問い合わせ</a> </li>
+            <li> <a href="#">運営会社</a> </li>
+          </ul>
+        </div>
+        <div class="question">
+          このサイトについて<br>
+          <ul class="footer-ul">
+            <li> <a href="#">POPA.comとは</a> </li>
+            <li> <a href="#">よくある質問</a> </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </body>
  
 </html>

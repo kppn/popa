@@ -11,10 +11,14 @@
 |
 */
 
+/*
 Route::get('/', function()
 {
 	return View::make('hello');
 });
+*/
+Route::get('/', 'OrderController@top');
+
 
 Route::get('home', function()
 {
@@ -44,4 +48,18 @@ Route::get( 'user/order',        array('uses' => 'OrderController@index'));
 Route::post('user/order',        array('uses' => 'OrderController@createOrder'));
 Route::post('user/orderPayment', array('uses' => 'OrderController@createOrderPayment'));
 Route::post('user/orderConfirm', array('uses' => 'OrderController@createOrderConfirm'));
+
+/*
+Route::get('post', function()
+{
+        return View::make('post');
+});
+
+Route::post('post', function()
+{
+        return View::make('post');
+});
+*/
+Route::get('post/{id}', 'OrderController@orderDetail');
+
 
