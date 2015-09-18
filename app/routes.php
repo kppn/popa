@@ -60,6 +60,7 @@ Route::post('post', function()
         return View::make('post');
 });
 */
-Route::get('post/{id}', 'OrderController@orderDetail');
+Route::get( 'post/{id}',   'OrderController@orderDetail');
+Route::post('post/create', 'PostController@createPost');
 
 

@@ -13,7 +13,7 @@ class OrderController extends \BaseController {
 			array_push($order_sets, [$allorders->shift(), $allorders->shift()] );
 		}
 
-		Log::debug('orders top : ', [$order_sets]);
+		//Log::debug('orders top : ', [$order_sets]);
 		
 		$view = View::make('top', compact('order_sets'));
 		Log::debug($view->render());
@@ -27,12 +27,19 @@ class OrderController extends \BaseController {
 
 		$order = Order::find($id);
 		
-		$order->num_view++;
-		DB::table('orders')->where('id', $id)->update(array('num_view' => $order->num_view));
-
+		$view_name;
+		if($order->user_id == Auth::user()->id){
+			$view_name = ('post_prize');
+		}
+		else {
+			$view_name = ('post');
+			$order->num_view++;
+			DB::table('orders')->where('id', $id)->update(array('num_view' => $order->num_view));
+		}
+		
 		Log::debug($order);
 		
-		$view = View::make('post', compact('order'));
+		$view = View::make($view_name, compact('order'));
 		Log::debug($view->render());
 		return $view;
 	}

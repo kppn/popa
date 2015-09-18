@@ -50,4 +50,8 @@ class User extends Eloquent implements UserInterface{
 	public function getRememberTokenName() {
 		return 'remember_token';
 	}
+
+	public function posts() {
+		return $this->hasMany('Post');
+	}
 }
