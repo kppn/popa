@@ -99,5 +99,34 @@
                               //editorContainer.style.height = editor.root.ownerDocument.body.scrollHeight + 'px';
                             });
       
+                            function postUserPost(order_id) {
+                              var user_pop= editor.getText();
+                              console.log(user_pop);
+
+                              var form = document.createElement('form');
+                              document.body.appendChild(form);
+
+                              var input_pop = document.createElement('input');
+                              input_pop.setAttribute('type', 'hidden');
+                              input_pop.setAttribute('name', 'user_pop');
+                              input_pop.setAttribute('value', user_pop);
+                              form.appendChild(input_pop);
+
+                              var input_text = document.createElement('input');
+                              input_text.setAttribute('type', 'hidden');
+                              input_text.setAttribute('name', 'user_post');
+                              input_text.setAttribute('value', document.getElementById('user_post').value);
+                              form.appendChild(input_text);
+
+                              var input_order_id = document.createElement('input');
+                              input_order_id.setAttribute('type', 'hidden');
+                              input_order_id.setAttribute('name', 'order_id');
+                              input_order_id.setAttribute('value', order_id);
+                              form.appendChild(input_order_id);
+
+                              form.setAttribute('action', '/post/create');
+                              form.setAttribute('method', 'post');
+                              form.submit();
+                            }
     </script>
 

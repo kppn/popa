@@ -13,7 +13,7 @@
 <style>
   div {
     border: solid 1px;
-    // margin: 10px;
+    //margin: 10px;
   }
 </style>
 
@@ -24,7 +24,7 @@
     <div class="col-md-6">
       <div class="row">
         <!-- 画像 -->
-        {{HTML::image('order_images/'.$order->list_image_filename1, $order->title, array('width' => 300 , 'height' => 300))}}
+        {{HTML::image('order_images/'.$order->list_image_filename1, $order->title, array('class' => 'img-responsive'))}}
       </div>
     </div>
     <div class="col-md-6">
@@ -101,45 +101,82 @@
     </div>
   </div>
    
-  {{-- <!-- Create Post --> --}}
   <div class="row">
     <div class="col-md-12">
-      POPの雛形
-    </div>
-    <div class="col-md-12">
+
       <div class="row">
-        <div class="col-md-10">
-          @include('wysiwyg')
-        </div>
-        <div class="col-md-2">
-          送信ボタン
+        <div class="col-md-12">
+          POPの雛形
         </div>
       </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          @include('wysiwyg')
+        </div>
+
+        <div class="col-md-6">
+          {{-- 実際のPOST FormはJavascriptで作成する --}}
+          <div class="row">
+            <div class="col-md-12">
+              {{ Form::text('post', Input::old('post'), ['class' => 'form-control', 'id' => 'user_post']) }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2">
+              {{ Form::button('投稿する', ['class' => 'btn btn-primary', 'onClick' => "postUserPost( $order->id ) " ]  ) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
+
   {{-- <!-- Old Post --> --}}
   <div class="row">
-    <div class="col-md-12">
-      過去のPOP
+    <div class="col-md-1">
     </div>
-    <div class="col-md-8">
-      POP
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-10">
+
       <div class="row">
-        <div class="col-md-12">
-          作者：
-        </div>
-        <div class="col-md-12">
-          作成日時：
-        </div>
-        <div class="col-md-12">
-          ？？？：
+        <div class="col-md-8">
+           過去のPOP
         </div>
       </div>
+  
+      @foreach($order->posts as $post)
+        <div class="row">
+          <div class="col-md-8">
+            @if(empty($post->other_filename))
+              img：{{ $post->pop_filename }}
+              {{-- HTML::image('post_images/'.$post->pop_filename, $post->pop_filename, array('class' => 'img-responsive')) --}}
+            @else
+              {{-- HTML::image('post_images/'.$post->other_filename, $post->other_filename, array('class' => 'img-responsive')) --}}
+            @endif
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-md-12">
+                コメント：{{ $post->post }}
+              </div>
+              <div class="col-md-12">
+                作者：{{ $post->user->acc_name }}
+              </div>
+              <div class="col-md-12">
+                作成日時：{{ $post->created_at }}
+              </div>
+            </div>
+          </div>
+        </div>
+      @endforeach
+
+    </div>
+    <div class="col-md-1">
     </div>
   </div>
+
 
 </div>
 
