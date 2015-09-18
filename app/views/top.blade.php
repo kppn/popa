@@ -64,6 +64,7 @@
           <div class="row">
             @while(!empty($order_set))
               <?php $order = array_shift($order_set); ?>
+              <?php if ($order == null) {break;} ?>
               <div class = "col-md-6">
                 <div class="row-md-12">
                   <div class="col-md-12">
